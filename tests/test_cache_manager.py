@@ -21,3 +21,8 @@ def test_cache_manager(tmp_path):
     # Assert cache now exists and is readable
     assert manager.has_cache(test_hash)
     assert manager.read_cache(test_hash) == test_sql
+    
+    # Test deletion
+    assert manager.delete_cache(test_hash) is True
+    assert not manager.has_cache(test_hash)
+    assert manager.delete_cache(test_hash) is False

@@ -38,31 +38,46 @@ def e2e_env(tmp_path, monkeypatch):
     
     return engine
 
-def test_e2e_flow(e2e_env):
+def test_e2e_flow(e2e_env, monkeypatch):
     """
-    Test the full cycle: generate -> check cache -> reset -> verify db.
+    Test the full cycle: generate -> check cache -> regenerate -> verify db.
     """
     engine = e2e_env
     
     # Run Generate
     result = runner.invoke(app, ["generate"])
     assert result.exit_code == 0
-    assert "Generation Complete" in result.stdout
+    assert "Generation & Application Complete" in result.stdout
+    assert "Affected Rows" in result.stdout
     
-    # Run Generate Again (Cache Hit)
-    result2 = runner.invoke(app, ["generate"])
-    assert result2.exit_code == 0
-    assert "Cache Hit" in result2.stdout
-    
-    # Run Reset
-    result3 = runner.invoke(app, ["reset"])
-    assert result3.exit_code == 0
-    assert "Reset Successful" in result3.stdout
-    assert "Affected Rows" in result3.stdout
-    
-    # Verify DB state
+    # Verify DB state directly after generate
     with engine.connect() as conn:
         count = conn.execute(text("SELECT COUNT(*) FROM users")).scalar()
         assert count == 1
         name = conn.execute(text("SELECT name FROM users")).scalar()
         assert name == "Alice E2E"
+    
+    # Run Generate Again (Cache Hit)
+    result2 = runner.invoke(app, ["generate"])
+    assert result2.exit_code == 0
+    assert "Cache Hit & Applied" in result2.stdout
+    
+    # Change the mock to return different data for regenerate
+    class DummyE2ERegenerateEngine(AIEngine):
+        def _call_llm(self, system_prompt: str, user_prompt: str) -> str:
+            return "INSERT INTO users (id, name) VALUES (2, 'Bob Regenerated');"
+            
+    monkeypatch.setattr("omniseed.cli.main.get_ai_engine", lambda config: DummyE2ERegenerateEngine(config))
+    
+    # Run Regenerate
+    result3 = runner.invoke(app, ["regenerate"])
+    assert result3.exit_code == 0
+    assert "Regeneration Complete" in result3.stdout
+    assert "Affected Rows" in result3.stdout
+    
+    # Verify DB state changed after regenerate
+    with engine.connect() as conn:
+        count = conn.execute(text("SELECT COUNT(*) FROM users")).scalar()
+        assert count == 1  # Should still be 1 because old table is deleted
+        name = conn.execute(text("SELECT name FROM users")).scalar()
+        assert name == "Bob Regenerated"

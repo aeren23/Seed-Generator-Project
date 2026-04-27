@@ -30,3 +30,11 @@ class CacheManager:
         file_path = self._get_file_path(schema_hash)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(sql_content)
+
+    def delete_cache(self, schema_hash: str) -> bool:
+        """Delete the cached sql file if it exists. Returns True if deleted, False if not found."""
+        file_path = self._get_file_path(schema_hash)
+        if file_path.exists():
+            file_path.unlink()
+            return True
+        return False

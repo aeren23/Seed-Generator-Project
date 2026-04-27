@@ -67,6 +67,8 @@
 | 2026-04-24 | Faz 4B tamamlandı. Generate ve Reset UseCase akışları birleştirilip test edildi. |
 | 2026-04-24 | Faz 5 tamamlandı. CLI (Typer+Rich) E2E olarak başarılı şekilde test edildi. |
 | 2026-04-24 | Faz 6 tamamlandı. CHANGELOG, LICENSE, Github Actions eklendi. V1.0 uçtan uca tamamlandı. |
+| 2026-04-27 | `.env` dosyası Gemini 2.5 Flash ve SQLite test ortamı için düzenlendi. |
+| 2026-04-27 | `generate` komutu veritabanına veri basacak şekilde güncellendi ve yeni bir `regenerate` komutu eklendi. |
 
 ---
 

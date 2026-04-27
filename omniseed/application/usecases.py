@@ -15,13 +15,15 @@ class GenerateUseCase:
                  config: ConfigManager, 
                  inspector: SchemaInspector, 
                  cache_manager: CacheManager, 
-                 ai_engine: AIEngine):
+                 ai_engine: AIEngine,
+                 executor: DatabaseExecutor):
         self.config = config
         self.inspector = inspector
         self.cache_manager = cache_manager
         self.ai_engine = ai_engine
+        self.executor = executor
 
-    def execute(self) -> Dict[str, Any]:
+    def execute(self, force_regenerate: bool = False) -> Dict[str, Any]:
         """
         Executes the 'generate' flow described in specs.
         """
@@ -31,10 +33,16 @@ class GenerateUseCase:
         schema_hash = StateHasher.generate_hash(schema_dict)
         logger.info(f"Schema hash generated: {schema_hash}")
 
+        if force_regenerate:
+            logger.info("Force regenerate requested. Deleting existing cache...")
+            self.cache_manager.delete_cache(schema_hash)
+
         if self.cache_manager.has_cache(schema_hash):
             msg = "Golden state already cached."
             logger.info(msg)
-            return {"status": "cached", "message": msg, "hash": schema_hash}
+            sql_script = self.cache_manager.read_cache(schema_hash)
+            metrics = self.executor.reset_database(schema_dict, sql_script)
+            return {"status": "cached", "message": msg, "hash": schema_hash, "metrics": metrics}
 
         logger.info("Cache missed. Requesting generation from AI Engine...")
         sql_output = self.ai_engine.generate_sql(schema_dict)
@@ -42,7 +50,10 @@ class GenerateUseCase:
         logger.info("AI generation successful. Saving to cache...")
         self.cache_manager.write_cache(schema_hash, sql_output)
         
-        return {"status": "generated", "message": "New seed data generated and cached successfully.", "hash": schema_hash}
+        logger.info("Executing safe database reset transaction with newly generated data...")
+        metrics = self.executor.reset_database(schema_dict, sql_output)
+        
+        return {"status": "generated", "message": "New seed data generated, cached, and applied successfully.", "hash": schema_hash, "metrics": metrics}
 
 class ResetUseCase:
     def __init__(self, 

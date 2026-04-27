@@ -27,7 +27,8 @@ def build_generate_usecase() -> GenerateUseCase:
     inspector = get_inspector(config.db_connection_string, config.db_type)
     cache_manager = CacheManager()
     ai_engine = get_ai_engine(config)
-    return GenerateUseCase(config, inspector, cache_manager, ai_engine)
+    executor = get_executor(config.db_connection_string, config.db_type)
+    return GenerateUseCase(config, inspector, cache_manager, ai_engine, executor)
 
 def build_reset_usecase() -> ResetUseCase:
     config = get_config()
@@ -57,12 +58,50 @@ def generate():
             result = usecase.execute()
             
         if result["status"] == "cached":
-            console.print(Panel(result["message"], title="[yellow]Cache Hit", border_style="yellow"))
+            console.print(Panel(
+                f"Status: [yellow]Golden state already cached.[/yellow]\n"
+                f"Affected Rows: [bold green]{result['metrics']['affected_rows']}[/bold green]\n"
+                f"Execution Time: [bold cyan]{result['metrics']['duration_seconds']}s[/bold cyan]",
+                title="[yellow]Cache Hit & Applied", border_style="yellow"))
         else:
-            console.print(Panel(result["message"], title="[green]Generation Complete", border_style="green"))
+            console.print(Panel(
+                f"Status: [green]New seed data generated and cached.[/green]\n"
+                f"Affected Rows: [bold green]{result['metrics']['affected_rows']}[/bold green]\n"
+                f"Execution Time: [bold cyan]{result['metrics']['duration_seconds']}s[/bold cyan]",
+                title="[green]Generation & Application Complete", border_style="green"))
             
     except Exception as e:
         console.print(f"[bold red]Error during generation:[/bold red] {str(e)}")
+        raise typer.Exit(code=1)
+
+@app.command()
+def regenerate():
+    """
+    Forcefully delete the current cache, generate new seed data from AI, and apply it to the database.
+    """
+    console.rule("[bold magenta]OmniSeed Regenerate Flow")
+    
+    try:
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console
+        ) as progress:
+            task = progress.add_task("[magenta]Initializing dependencies...", total=None)
+            
+            usecase = build_generate_usecase()
+            
+            progress.update(task, description="[magenta]Invalidating cache, regenerating data, and applying...")
+            result = usecase.execute(force_regenerate=True)
+            
+        console.print(Panel(
+            f"Status: [magenta]Cache cleared, new seed data generated and applied.[/magenta]\n"
+            f"Affected Rows: [bold green]{result['metrics']['affected_rows']}[/bold green]\n"
+            f"Execution Time: [bold cyan]{result['metrics']['duration_seconds']}s[/bold cyan]",
+            title="[magenta]Regeneration Complete", border_style="magenta"))
+            
+    except Exception as e:
+        console.print(f"[bold red]Error during regeneration:[/bold red] {str(e)}")
         raise typer.Exit(code=1)
 
 @app.command()
