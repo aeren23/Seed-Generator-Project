@@ -1,8 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { Basket } from '../types';
 import { basketService } from '../api/basketService';
 import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
+
+// Checkout event bus — components can subscribe to listen for checkout completion
+type CheckoutListener = () => void;
+const checkoutListeners: Set<CheckoutListener> = new Set();
+
+export const subscribeToCheckout = (fn: CheckoutListener): (() => void) => {
+  checkoutListeners.add(fn);
+  return () => { checkoutListeners.delete(fn); };
+};
+
+const notifyCheckout = () => checkoutListeners.forEach(fn => fn());
 
 interface CartContextType {
   basket: Basket | null;
@@ -21,7 +32,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
 
-  const refreshBasket = async () => {
+  const refreshBasket = useCallback(async () => {
     if (!isAuthenticated) return;
     try {
       const data = await basketService.getActive();
@@ -29,11 +40,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Error fetching basket:', error);
     }
-  };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     refreshBasket();
-  }, [isAuthenticated]);
+  }, [refreshBasket]);
 
   const addItem = async (bookId: string, quantity = 1) => {
     try {
@@ -41,8 +52,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await basketService.addItem(bookId, quantity);
       await refreshBasket();
       toast.success('Kitap sepete eklendi');
-    } catch (error) {
-      toast.error('Sepete eklenirken hata oluştu');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Sepete eklenirken hata oluştu');
     } finally {
       setLoading(false);
     }
@@ -80,6 +91,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await basketService.checkout();
       await refreshBasket();
       toast.success('Sipariş başarıyla tamamlandı!');
+      // Notify all subscribers (e.g. HomePage) to refresh their book lists
+      notifyCheckout();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Sipariş tamamlanamadı');
     } finally {

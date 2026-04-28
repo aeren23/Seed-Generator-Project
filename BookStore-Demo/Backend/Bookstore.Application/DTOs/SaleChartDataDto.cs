@@ -4,5 +4,5 @@ public class SaleChartDataDto
 {
     public DateTime Date { get; set; }
     public decimal TotalRevenue { get; set; }
-    public int SaleCount { get; set; }
+    public int TotalItems { get; set; }
 }

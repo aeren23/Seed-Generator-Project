@@ -14,6 +14,7 @@ export interface Category {
 export interface Book {
   id: string;
   sellerId: string;
+  sellerName?: string;
   categoryId: string;
   title: string;
   authorName: string;
@@ -24,17 +25,18 @@ export interface Book {
 }
 
 export interface BasketItem {
-  id: string;
-  basketId: string;
   bookId: string;
+  bookTitle: string;
+  coverImageUrl?: string;
+  unitPrice: number;
   quantity: number;
-  book?: Book;
+  subTotal: number;
 }
 
 export interface Basket {
   id: string;
   userId: string;
-  isCompleted: boolean;
+  totalAmount: number;
   items: BasketItem[];
 }
 

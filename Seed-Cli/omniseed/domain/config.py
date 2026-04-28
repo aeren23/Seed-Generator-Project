@@ -8,7 +8,7 @@ class ConfigManager(BaseSettings):
     llm_model: str = Field("gpt-4o", alias="LLM_MODEL")
     seed_language: str = Field("tr", alias="SEED_LANGUAGE")
     system_context: str = Field(..., alias="SYSTEM_CONTEXT")
-    row_count_per_table: int = Field(10, alias="ROW_COUNT_PER_TABLE")
+    data_scale: str = Field("small", alias="DATA_SCALE")
 
     model_config = SettingsConfigDict(
         env_file=".env",

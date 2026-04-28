@@ -50,6 +50,7 @@ public class BasketService : IBasketService
             {
                 BookId = i.BookId,
                 BookTitle = i.Book.Title,
+                CoverImageUrl = i.Book.CoverImageUrl,
                 UnitPrice = i.Book.Price,
                 Quantity = i.Quantity
             }).ToList()
@@ -77,13 +78,17 @@ public class BasketService : IBasketService
         }
         else
         {
-            basket.Items.Add(new BasketItem
+            // Use _context.BasketItems.Add() directly to guarantee EntityState.Added.
+            // basket.Items.Add() mis-tracks state as Modified on a previously saved basket,
+            // causing EF to generate UPDATE instead of INSERT => DbUpdateConcurrencyException.
+            var newItem = new BasketItem
             {
                 Id = Guid.NewGuid(),
                 BasketId = basket.Id,
-                BookId = book.Id,
+                BookId = dto.BookId,
                 Quantity = dto.Quantity
-            });
+            };
+            _context.BasketItems.Add(newItem);
         }
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -96,7 +101,7 @@ public class BasketService : IBasketService
         var item = basket.Items.FirstOrDefault(i => i.BookId == bookId);
         if (item != null)
         {
-            basket.Items.Remove(item);
+            _context.BasketItems.Remove(item);
             await _context.SaveChangesAsync(cancellationToken);
         }
     }
@@ -104,8 +109,8 @@ public class BasketService : IBasketService
     public async Task ClearBasketAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var basket = await GetOrCreateActiveBasketEntityAsync(userId, cancellationToken);
-        
-        _context.Set<BasketItem>().RemoveRange(basket.Items);
+
+        _context.BasketItems.RemoveRange(basket.Items);
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

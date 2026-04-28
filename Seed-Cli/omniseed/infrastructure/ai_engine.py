@@ -21,19 +21,19 @@ class AIEngine(ABC):
         self.config = config
 
     def build_system_prompt(self) -> str:
-        """Constructs the strict system prompt directly from spec.md §5."""
-        return (
-            f"You are an expert SQL Database Administrator. I will provide you with a database schema in JSON format. "
-            f"Your task is to generate {self.config.row_count_per_table} rows of realistic data for these tables in {self.config.seed_language}.\n"
-            f"Context: {self.config.system_context}.\n\n"
-            f"CRITICAL RULES:\n"
-            f"1. Respect Foreign Key dependencies. Insert parent tables before child tables.\n"
-            f"2. Output ONLY pure SQL `INSERT` statements. Do not include markdown formatting like ```sql or explanations.\n"
-            f"3. Ensure data types match the schema."
-        )
+        """Constructs a universal system prompt for any database schema."""
+        return f"""You are a database seeding expert. Generate SQL INSERT statements.
+LANGUAGE: {self.config.seed_language}
+CONTEXT: {self.config.system_context}
+
+CRITICAL RULES:
+1. Quoting: ALWAYS use double quotes for table and column names (e.g., INSERT INTO "TableName" ("Col") VALUES ...).
+2. Format: Individual INSERT statements, one per line, ending with ';'.
+3. Consistency: Ensure all Foreign Key relationships are respected.
+4. Output ONLY raw SQL starting with INSERT. No markdown, no explanations."""
 
     def clean_sql_output(self, raw_output: str) -> str:
-        """Cleans markdown syntax like ```sql ... ``` from the LLM output."""
+        """Cleans markdown syntax and handles truncated outputs."""
         cleaned = raw_output.strip()
         # Remove markdown code block markers
         cleaned = re.sub(r"^```[a-zA-Z]*\n", "", cleaned, flags=re.MULTILINE)
@@ -42,9 +42,44 @@ class AIEngine(ABC):
 
         if not cleaned:
             raise LLMOutputError("LLM returned empty output after cleaning.")
-        if not cleaned.lower().startswith("insert"):
-            # It might start with comments. We just allow it but log a warning
-            logger.warning("Generated SQL does not strictly start with 'INSERT'. It might contain unexpected text.")
+
+        # --- COMMENT & HEADER STRIPPER ---
+        # Find the first occurrence of 'INSERT INTO' (case insensitive) and discard everything before it.
+        first_insert = cleaned.lower().find("insert into")
+        if first_insert != -1:
+            cleaned = cleaned[first_insert:]
+        
+        # Filter: Keep ONLY lines that start with INSERT INTO or are empty
+        lines = cleaned.split("\n")
+        cleaned = "\n".join([line for line in lines if line.strip().lower().startswith("insert into") or line.strip() == ""])
+        # ---------------------------------
+
+        # --- TRUNCATION REPAIR ---
+        # If the LLM was truncated, the last line might be incomplete.
+        lines = cleaned.split("\n")
+        if lines and lines[-1].strip() and not lines[-1].strip().endswith(";"):
+            logger.warning(f"Truncated line detected and removed: {lines[-1]}")
+            lines = lines[:-1]
+        cleaned = "\n".join(lines)
+
+        # --- SMART UUID REPAIR STEP ---
+        def repair_uuid(match):
+            val = match.group(0).strip("'")
+            parts = val.split('-')
+            if len(parts) == 5:
+                first = re.sub(r'[^0-9a-fA-F]', '0', parts[0])
+                if len(first) > 8: first = first[-8:] 
+                parts[0] = first.zfill(8)             
+                for i in range(1, 5):
+                    parts[i] = re.sub(r'[^0-9a-fA-F]', '0', parts[i])
+                return f"'{'-'.join(parts)}'"
+            return match.group(0)
+
+        cleaned = re.sub(r"'[^']+\-[^']+\-[^']+\-[^']+\-[^']+'", repair_uuid, cleaned)
+        # ------------------------
+
+        if not cleaned.lower().strip().startswith("insert"):
+            logger.warning("Generated SQL does not strictly start with 'INSERT'.")
         
         return cleaned
 
@@ -94,7 +129,7 @@ class AnthropicEngine(AIEngine):
         client = Anthropic(api_key=self.config.llm_api_key)
         response = client.messages.create(
             model=self.config.llm_model,
-            max_tokens=4096,
+            max_tokens=8192,
             system=system_prompt,
             messages=[
                 {"role": "user", "content": user_prompt}

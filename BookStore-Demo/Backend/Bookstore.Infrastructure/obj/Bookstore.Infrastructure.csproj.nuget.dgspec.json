@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\Bookstore.Infrastructure.csproj": {}
+    "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\Bookstore.Infrastructure.csproj": {}
   },
   "projects": {
-    "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj": {
+    "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj",
+        "projectUniqueName": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj",
         "projectName": "Bookstore.Application",
-        "projectPath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj",
+        "projectPath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj",
         "packagesPath": "C:\\Users\\alihe\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\obj\\",
+        "outputPath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj": {
-                "projectPath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj"
+              "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj": {
+                "projectPath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj"
               }
             }
           }
@@ -73,14 +73,14 @@
         }
       }
     },
-    "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj": {
+    "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj",
+        "projectUniqueName": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj",
         "projectName": "Bookstore.Domain",
-        "projectPath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj",
+        "projectPath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj",
         "packagesPath": "C:\\Users\\alihe\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\obj\\",
+        "outputPath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -144,14 +144,14 @@
         }
       }
     },
-    "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\Bookstore.Infrastructure.csproj": {
+    "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\Bookstore.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\Bookstore.Infrastructure.csproj",
+        "projectUniqueName": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\Bookstore.Infrastructure.csproj",
         "projectName": "Bookstore.Infrastructure",
-        "projectPath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\Bookstore.Infrastructure.csproj",
+        "projectPath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\Bookstore.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\alihe\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\obj\\",
+        "outputPath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -172,11 +172,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj": {
-                "projectPath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj"
+              "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj": {
+                "projectPath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Application\\Bookstore.Application.csproj"
               },
-              "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj": {
-                "projectPath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj"
+              "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj": {
+                "projectPath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj"
               }
             }
           }

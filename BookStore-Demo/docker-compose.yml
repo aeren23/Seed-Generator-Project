@@ -26,7 +26,9 @@ services:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=bookstore;Username=postgres;Password=password
       - DB_CONNECTION_STRING=postgresql://postgres:password@db:5432/bookstore # For OmniSeed override
       - OmniSeed__PythonExecutable=/opt/venv/bin/python
-      - OmniSeed__ScriptPath=/app/Seed-Cli/omniseed/bookstore_cli.py
+      - OmniSeed__WorkingDirectory=/app/Seed-Cli
+    env_file:
+      - ../Seed-Cli/.env
     volumes:
       - ../Seed-Cli:/app/Seed-Cli
     depends_on:

@@ -13,7 +13,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const totalAmount = basket?.items?.reduce((sum, item) => {
-    return sum + ((item.book?.price || 0) * item.quantity);
+    return sum + (item.unitPrice * item.quantity);
   }, 0) || 0;
 
   return (
@@ -44,25 +44,32 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
               <p className="text-sm">Hemen kitap keşfetmeye başlayın!</p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {basket.items.map((item) => (
-                <div key={item.id} className="flex gap-4 items-center bg-slate-50 p-4 rounded-xl">
-                  {item.book?.coverImageUrl ? (
-                    <img src={item.book.coverImageUrl} alt={item.book.title} className="w-16 h-24 object-cover rounded-md shadow-sm" />
+                <div key={item.bookId} className="flex gap-4 items-center bg-slate-50 p-4 rounded-xl">
+                  {/* Cover Image — uses coverImageUrl from BasketItemDto directly */}
+                  {item.coverImageUrl ? (
+                    <img
+                      src={item.coverImageUrl}
+                      alt={item.bookTitle}
+                      className="w-16 h-24 object-cover rounded-md shadow-sm flex-shrink-0"
+                    />
                   ) : (
-                    <div className="w-16 h-24 bg-slate-200 rounded-md flex items-center justify-center text-xs text-slate-400">Görsel Yok</div>
+                    <div className="w-16 h-24 bg-slate-200 rounded-md flex items-center justify-center text-xs text-slate-400 flex-shrink-0">
+                      Görsel Yok
+                    </div>
                   )}
                   
-                  <div className="flex-1">
-                    <h4 className="font-bold text-slate-900 line-clamp-1">{item.book?.title}</h4>
-                    <p className="text-sm text-slate-500 mb-2">₺{item.book?.price.toFixed(2)} x {item.quantity}</p>
-                    <p className="font-semibold text-blue-600">₺{((item.book?.price || 0) * item.quantity).toFixed(2)}</p>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-slate-900 line-clamp-2 text-sm">{item.bookTitle}</h4>
+                    <p className="text-sm text-slate-500 mt-1">₺{item.unitPrice.toFixed(2)} × {item.quantity}</p>
+                    <p className="font-semibold text-blue-600 mt-1">₺{(item.unitPrice * item.quantity).toFixed(2)}</p>
                   </div>
                   
                   <button 
                     onClick={() => removeItem(item.bookId)}
                     disabled={loading}
-                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors flex-shrink-0"
                   >
                     <Trash2 className="h-5 w-5" />
                   </button>
@@ -87,11 +94,11 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
                 Temizle
               </button>
               <button 
-                onClick={checkout}
+                onClick={() => { checkout(); onClose(); }}
                 disabled={loading}
                 className="py-3 px-4 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30"
               >
-                Satın Al
+                {loading ? 'İşleniyor...' : 'Satın Al'}
               </button>
             </div>
           </div>

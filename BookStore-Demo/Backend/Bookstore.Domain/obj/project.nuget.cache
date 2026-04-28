@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "k+0oqoeQVOg=",
+  "dgSpecHash": "MzzY0tBBXro=",
   "success": true,
-  "projectFilePath": "C:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj",
+  "projectFilePath": "c:\\Users\\alihe\\OneDrive\\Masaüstü\\Seed Generator Project\\BookStore-Demo\\Backend\\Bookstore.Domain\\Bookstore.Domain.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\alihe\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\8.0.0\\microsoft.aspnetcore.cryptography.internal.8.0.0.nupkg.sha512",
     "C:\\Users\\alihe\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\8.0.0\\microsoft.aspnetcore.cryptography.keyderivation.8.0.0.nupkg.sha512",

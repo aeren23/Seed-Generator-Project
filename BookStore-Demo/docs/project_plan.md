@@ -40,6 +40,7 @@
 - [x] Configure the service to execute a shell command/process pointing to the Python script: `python ../OmniSeed/omniseed.py reset`.
 - [x] Handle process exit codes (0 = Success, Error otherwise).
 - [x] **API:** Create `AdminController` with `POST /api/admin/reset` endpoint calling the trigger service.
+- [x] **API:** Remove `HasData` and default EF Core seeding to prevent Data inconsistency on OmniSeed Truncate.
 
 ## ✅ Phase 4: React Frontend Setup (Vite)
 **Objective:** Build a fast, lightweight SPA to consume the API and demonstrate the system state.

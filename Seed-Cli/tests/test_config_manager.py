@@ -12,7 +12,7 @@ def test_config_manager_valid(monkeypatch):
     assert config.llm_api_key == "test-key"
     assert config.system_context == "test context"
     assert config.llm_provider == "openai"
-    assert config.row_count_per_table == 10
+    assert config.data_scale == "small"
     assert config.db_type == "sqlite"
 
 def test_config_manager_invalid_db_scheme(monkeypatch):

@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import type { Book, Category } from '../types';
 import { bookService } from '../api/bookService';
 import { categoryService } from '../api/categoryService';
+import { subscribeToCheckout } from '../context/CartContext';
 import BookCard from '../components/BookCard';
-import { Search } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const PAGE_SIZE = 8;
 
 const HomePage: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -12,31 +15,87 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [booksData, categoriesData] = await Promise.all([
-          bookService.getAll(1, 100),
-          categoryService.getAll()
-        ]);
-        setBooks(booksData.items || []);
-        setCategories(categoriesData);
-      } catch (error) {
-        console.error('Veriler yüklenirken hata oluştu', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const fetchBooks = useCallback(async (page: number) => {
+    try {
+      setLoading(true);
+      const result = await bookService.getAll(page, PAGE_SIZE);
+      setBooks(result.items || []);
+      setTotalPages(result.totalPages || 1);
+      setTotalCount(result.totalCount || 0);
+      setCurrentPage(result.pageNumber || page);
+    } catch (error) {
+      console.error('Kitaplar yüklenirken hata oluştu', error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  const fetchCategories = useCallback(async () => {
+    try {
+      const data = await categoryService.getAll();
+      setCategories(data);
+    } catch (error) {
+      console.error('Kategoriler yüklenirken hata oluştu', error);
+    }
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    fetchBooks(1);
+    fetchCategories();
+  }, [fetchBooks, fetchCategories]);
+
+  // Re-fetch books after checkout so stock counts update instantly
+  useEffect(() => {
+    const unsubscribe = subscribeToCheckout(() => fetchBooks(currentPage));
+    return () => { unsubscribe(); };
+  }, [fetchBooks, currentPage]);
+
+  // Filter client-side (category + search)
   const filteredBooks = books.filter(book => {
     const matchesCategory = selectedCategory ? book.categoryId === selectedCategory : true;
     const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           book.authorName.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    fetchBooks(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Reset to page 1 when category or search changes
+  useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+      fetchBooks(1);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory, searchQuery]);
+
+  // Generate page numbers to display
+  const getPageNumbers = (): (number | '...')[] => {
+    const pages: (number | '...')[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('...');
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pages.push(i);
+      }
+      if (currentPage < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    return pages;
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -96,7 +155,7 @@ const HomePage: React.FC = () => {
           <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : filteredBooks.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredBooks.map(book => (
             <BookCard key={book.id} book={book} />
           ))}
@@ -104,6 +163,49 @@ const HomePage: React.FC = () => {
       ) : (
         <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
           <p className="text-xl text-slate-500 font-medium">Aradığınız kriterlere uygun kitap bulunamadı.</p>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && !loading && (
+        <div className="flex items-center justify-center gap-2 pt-4 pb-8">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronLeft className="w-5 h-5 text-slate-600" />
+          </button>
+
+          {getPageNumbers().map((page, idx) => (
+            page === '...' ? (
+              <span key={`dots-${idx}`} className="px-2 text-slate-400 font-bold">...</span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${
+                  currentPage === page 
+                    ? 'bg-slate-900 text-white shadow-md' 
+                    : 'border border-slate-200 text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {page}
+              </button>
+            )
+          ))}
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronRight className="w-5 h-5 text-slate-600" />
+          </button>
+
+          <span className="ml-4 text-sm text-slate-400">
+            {totalCount} kitaptan {(currentPage - 1) * PAGE_SIZE + 1}-{Math.min(currentPage * PAGE_SIZE, totalCount)} arası
+          </span>
         </div>
       )}
     </div>

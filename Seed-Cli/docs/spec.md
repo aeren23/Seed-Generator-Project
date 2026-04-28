@@ -41,7 +41,7 @@ LLM_MODEL=gpt-4o
 # Generation Context
 SEED_LANGUAGE=tr
 SYSTEM_CONTEXT="This is an online bookstore. Generate realistic Turkish book titles, authors, and prices. Ensure cover image URLs use placeholder services like picsum.photos."
-ROW_COUNT_PER_TABLE=10
+DATA_SCALE=small
 ```
 
 ---
@@ -73,7 +73,7 @@ The tool operates via a CLI interface with two primary commands.
 The AI Engine must use a strict system prompt to guarantee parsable output.
 
 **System Prompt Template:**
-> "You are an expert SQL Database Administrator. I will provide you with a database schema in JSON format. Your task is to generate {ROW_COUNT_PER_TABLE} rows of realistic data for these tables in {SEED_LANGUAGE}. 
+> "You are an expert SQL Database Administrator. I will provide you with a database schema in JSON format. Your task is to generate a '{DATA_SCALE}' amount of realistic data for these tables in {SEED_LANGUAGE}. Instead of generating the same number of rows for every table, intelligently vary the row count based on table relationships. (e.g. few rows for lookup tables, many rows for transaction tables).
 > Context: {SYSTEM_CONTEXT}.
 > 
 > CRITICAL RULES:

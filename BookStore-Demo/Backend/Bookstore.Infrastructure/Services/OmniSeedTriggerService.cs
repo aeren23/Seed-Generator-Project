@@ -19,27 +19,36 @@ public class OmniSeedTriggerService : IOmniSeedService
     public async Task<bool> TriggerResetAsync(CancellationToken cancellationToken = default)
     {
         string pythonExecutable = _configuration["OmniSeed:PythonExecutable"] ?? "python";
-        string scriptPath = _configuration["OmniSeed:ScriptPath"] ?? "../../../Seed-Cli/omniseed/bookstore_cli.py";
+        string workingDirectory = _configuration["OmniSeed:WorkingDirectory"] ?? "/app/Seed-Cli";
 
-        _logger.LogInformation("Triggering OmniSeed CLI reset command via: {Executable} {ScriptPath}", pythonExecutable, scriptPath);
+        _logger.LogInformation("Triggering OmniSeed CLI reset: {Executable} -m omniseed reset (cwd: {Cwd})", pythonExecutable, workingDirectory);
 
         try
         {
             var startInfo = new ProcessStartInfo
             {
                 FileName = pythonExecutable,
-                Arguments = $"\"{scriptPath}\" reset",
+                Arguments = "-m omniseed reset",
+                WorkingDirectory = workingDirectory,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
 
+            // Pass DB_CONNECTION_STRING from the current environment so the CLI
+            // connects to the Docker-internal database address (db:5432) instead
+            // of localhost:5432 from .env
+            var dbConn = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+            if (!string.IsNullOrEmpty(dbConn))
+            {
+                startInfo.Environment["DB_CONNECTION_STRING"] = dbConn;
+            }
+
             using var process = new Process { StartInfo = startInfo };
             
             process.Start();
 
-            // Asynchronously read standard output and error
             var outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
             var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
 

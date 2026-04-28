@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace Bookstore.API.Controllers;
 
-[Authorize(Roles = "Customer,Admin")]
+[Authorize(Roles = "Customer,Seller,Admin")]
 [ApiController]
 [Route("api/[controller]")]
 public class BasketController : ControllerBase

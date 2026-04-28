@@ -36,7 +36,9 @@ RUN pip install --no-cache-dir \
     python-dotenv \
     google-generativeai \
     pydantic \
-    typer
+    pydantic-settings \
+    typer \
+    rich
 
 EXPOSE 8080
 

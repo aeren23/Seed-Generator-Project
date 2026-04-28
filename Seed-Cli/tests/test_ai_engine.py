@@ -21,14 +21,14 @@ def test_config(monkeypatch):
     monkeypatch.setenv("DB_CONNECTION_STRING", "sqlite:///test.db")
     monkeypatch.setenv("LLM_API_KEY", "test-key")
     monkeypatch.setenv("SYSTEM_CONTEXT", "test application")
-    monkeypatch.setenv("ROW_COUNT_PER_TABLE", "5")
+    monkeypatch.setenv("DATA_SCALE", "medium")
     monkeypatch.setenv("SEED_LANGUAGE", "en")
     return ConfigManager()
 
 def test_build_system_prompt(test_config):
     engine = MockDummyEngine(test_config, "INSERT INTO tables;")
     prompt = engine.build_system_prompt()
-    assert "Generate 5 rows" in prompt
+    assert "Generate a 'medium' amount" in prompt
     assert "in en" in prompt
     assert "Context: test application" in prompt
 

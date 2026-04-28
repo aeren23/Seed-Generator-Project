@@ -37,7 +37,7 @@ public class SaleRepository : ISaleRepository
             {
                 Date = g.Key,
                 TotalRevenue = g.Sum(si => si.UnitPrice * si.Quantity),
-                SaleCount = g.Select(si => si.SaleId).Distinct().Count()
+                TotalItems = g.Sum(si => si.Quantity)
             })
             .OrderBy(d => d.Date)
             .ToListAsync(cancellationToken);

@@ -46,7 +46,6 @@ def generate():
     
     try:
         with Progress(
-            SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
             console=console
         ) as progress:
@@ -83,7 +82,6 @@ def regenerate():
     
     try:
         with Progress(
-            SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
             console=console
         ) as progress:
@@ -113,7 +111,6 @@ def reset():
     
     try:
         with Progress(
-            SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
             console=console
         ) as progress:

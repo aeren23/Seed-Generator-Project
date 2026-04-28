@@ -12,6 +12,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardHome from './pages/DashboardHome';
 import InventoryManagement from './pages/InventoryManagement';
 import AdminPanel from './pages/AdminPanel';
+import BookDetailPage from './pages/BookDetailPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) => {
@@ -36,6 +37,7 @@ const AppRoutes = () => {
       
       {/* Public / General User Routes */}
       <Route path="/" element={<Layout><HomePage /></Layout>} />
+      <Route path="/books/:id" element={<Layout><BookDetailPage /></Layout>} />
       
       {/* Seller & Admin Routes */}
       <Route 

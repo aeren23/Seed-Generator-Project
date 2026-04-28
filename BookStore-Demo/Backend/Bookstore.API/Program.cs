@@ -98,7 +98,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Seed Database
+// Seed Database (Only applied if db hasn't been OmniSeeded or needs very basic initialization)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -117,26 +117,8 @@ using (var scope = app.Services.CreateScope())
                 await roleManager.CreateAsync(new Role { Name = role });
         }
 
-        var defaultAdmin = new User { UserName = "admin", Email = "admin@bookstore.com", FullName = "System Admin" };
-        if (userManager.Users.All(u => u.UserName != defaultAdmin.UserName))
-        {
-            await userManager.CreateAsync(defaultAdmin, "Admin123!");
-            await userManager.AddToRoleAsync(defaultAdmin, "Admin");
-        }
-
-        var defaultSeller = new User { UserName = "seller", Email = "seller@bookstore.com", FullName = "Store Manager" };
-        if (userManager.Users.All(u => u.UserName != defaultSeller.UserName))
-        {
-            await userManager.CreateAsync(defaultSeller, "Seller123!");
-            await userManager.AddToRoleAsync(defaultSeller, "Seller");
-        }
-
-        var defaultCustomer = new User { UserName = "customer", Email = "customer@bookstore.com", FullName = "Valued Customer" };
-        if (userManager.Users.All(u => u.UserName != defaultCustomer.UserName))
-        {
-            await userManager.CreateAsync(defaultCustomer, "Customer123!");
-            await userManager.AddToRoleAsync(defaultCustomer, "Customer");
-        }
+        // We REMOVED the hardcoded user creation.
+        // The users must now be created strictly by OmniSeed via AI generation / golden sql state.
     }
     catch (Exception ex)
     {
